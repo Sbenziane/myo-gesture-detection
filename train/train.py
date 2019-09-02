@@ -5,15 +5,15 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.utils.data
-
+import math
 
 LABELLEN = 5
 DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
-N, D_in, H, D_out = 64, 2048, 100, LABELLEN
-epochs = 1000
+N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
+epochs = 200
 batch_size = 128
 model_path = 'models/model_8_gestures.pt'
 
@@ -41,9 +41,9 @@ model_path = 'models/model_8_gestures.pt'
 #         return out
 
 
-model = TwoLayerNet(D_in, H, D_out)
-criterion = torch.nn.MSELoss(reduction='sum')
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-4)
+model = TwoLayerNet(D_in, D_out)
+criterion = torch.nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-2)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
@@ -65,7 +65,7 @@ def train(data, model, criterion, optimizer):
             [input, label] = d
             # y_pred = model(input.float())
             y_pred = model(input.to(device).float())
-            loss = criterion(y_pred.to(device).float(), label.float())
+            loss = criterion(y_pred.to(device), label.float().to(device))
             # print(loss.item())
             if i % 100 == 0:
                 it = iter(dataloader_test)
@@ -73,9 +73,10 @@ def train(data, model, criterion, optimizer):
                 # print(y_test, y_label)
                 y_test_pred = model(y_test.to(device).float())
                 loss_test = criterion(y_test_pred.to(
-                    device).float(), y_label.float())
+                    device).float(), y_label.float().to(device))
+                dif = math.sqrt(loss_test.item())
                 print(
-                    f'{epoch}, {i:04}, {loss.item():02.2f}, {loss_test.item():02.2f}')
+                    f'{epoch:04}/{epochs:04}, {i:04}, {loss.item():02.4f}, {loss_test.item():02.4f}, dif:{dif:02.4f}')
 
         # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
