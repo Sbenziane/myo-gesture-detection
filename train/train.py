@@ -11,6 +11,8 @@ LABELLEN = 5
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 100, LABELLEN
+epochs = 20
+batch_size = 16
 
 
 class TwoLayerNet(torch.nn.Module):
@@ -51,17 +53,23 @@ def train(data, model, criterion, optimizer):
     train_Dataset, test_Dataset = torch.utils.data.random_split(
         data_set, [train_size, test_size])
 
-    epochs = 100
     for epoch in range(epochs):
         dataloader = torch.utils.data.DataLoader(
-            train_Dataset, batch_size=10, shuffle=True)
+            train_Dataset, batch_size=batch_size, shuffle=True)
+        dataloader_test = torch.utils.data.DataLoader(
+            test_Dataset, batch_size=batch_size, shuffle=True)
         for i, d in enumerate(dataloader):
             [input, label] = d
             y_pred = model(input.float())
             loss = criterion(y_pred.float(), label.float())
             # print(loss.item())
             if i % 100 == 0:
-                print(i, loss.item())
+                it = iter(dataloader_test)
+                [y_test, y_label] = next(it)
+                # print(y_test, y_label)
+                y_test_pred = model(y_test.float())
+                loss_test = criterion(y_test_pred, y_label.float())
+                print(f'{epoch}, {i}, {loss.item()}, {loss_test.item()}')
 
         # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
