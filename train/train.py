@@ -15,7 +15,7 @@ DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 N, D_in, H, D_out = 64, 2048, 100, LABELLEN
 epochs = 20
 batch_size = 16
-model_path = 'models/model_fist_fingers_spread.pt'
+model_path = 'models/model_8_gestures.pt'
 
 
 # class TwoLayerNet(torch.nn.Module):
@@ -88,5 +88,5 @@ if __name__ == "__main__":
     print('loading...')
     data = read_csv(DATASET_FILEPATH)
     print('finish')
-
+    print(model_path)
     train(data, model, criterion, optimizer)
