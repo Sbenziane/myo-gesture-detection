@@ -13,8 +13,8 @@ DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 100, LABELLEN
-epochs = 20
-batch_size = 16
+epochs = 1000
+batch_size = 128
 model_path = 'models/model_8_gestures.pt'
 
 
@@ -44,7 +44,7 @@ model_path = 'models/model_8_gestures.pt'
 model = TwoLayerNet(D_in, H, D_out)
 criterion = torch.nn.MSELoss(reduction='sum')
 optimizer = torch.optim.SGD(model.parameters(), lr=1e-4)
-device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 
@@ -72,7 +72,8 @@ def train(data, model, criterion, optimizer):
                 # print(y_test, y_label)
                 y_test_pred = model(y_test.float())
                 loss_test = criterion(y_test_pred, y_label.float())
-                print(f'{epoch}, {i}, {loss.item()}, {loss_test.item()}')
+                print(
+                    f'{epoch}, {i:04}, {loss.item():02.2f}, {loss_test.item():02.2f}')
 
         # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
