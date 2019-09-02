@@ -1,5 +1,6 @@
 from util import read_csv
 from dataloader import Dataset, Transform
+from models import TwoLayerNet
 import numpy as np
 import torch
 import torch.nn as nn
@@ -13,29 +14,30 @@ LABELLEN = 5
 N, D_in, H, D_out = 64, 2048, 100, LABELLEN
 epochs = 20
 batch_size = 16
+model_path = 'models/model_fist_fingers_spread.pt'
 
 
-class TwoLayerNet(torch.nn.Module):
-    def __init__(self, D_in, H, D_out):
-        """
-        In the constructor we instantiate two nn.Linear modules and assign them as
-        member variables.
-        """
-        super(TwoLayerNet, self).__init__()
-        self.linear1 = torch.nn.Linear(D_in, H)
-        self.linear2 = torch.nn.Linear(H, D_out)
-        self.sigmoid = nn.Sigmoid()
+# class TwoLayerNet(torch.nn.Module):
+#     def __init__(self, D_in, H, D_out):
+#         """
+#         In the constructor we instantiate two nn.Linear modules and assign them as
+#         member variables.
+#         """
+#         super(TwoLayerNet, self).__init__()
+#         self.linear1 = torch.nn.Linear(D_in, H)
+#         self.linear2 = torch.nn.Linear(H, D_out)
+#         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x):
-        """
-        In the forward function we accept a Tensor of input data and we must return
-        a Tensor of output data. We can use Modules defined in the constructor as
-        well as arbitrary operators on Tensors.
-        """
-        h_relu = self.linear1(x).clamp(min=0)
-        y_pred = self.linear2(h_relu)
-        out = self.sigmoid(y_pred)
-        return out
+#     def forward(self, x):
+#         """
+#         In the forward function we accept a Tensor of input data and we must return
+#         a Tensor of output data. We can use Modules defined in the constructor as
+#         well as arbitrary operators on Tensors.
+#         """
+#         h_relu = self.linear1(x).clamp(min=0)
+#         y_pred = self.linear2(h_relu)
+#         out = self.sigmoid(y_pred)
+#         return out
 
 
 model = TwoLayerNet(D_in, H, D_out)
@@ -75,6 +77,10 @@ def train(data, model, criterion, optimizer):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+    # save model
+    torch.save(model.state_dict(), model_path)
+    print('save model')
 
 
 if __name__ == "__main__":

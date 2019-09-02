@@ -1,21 +1,26 @@
-from __future__ import print_function
-from matplotlib import pyplot as plt
-from util import write_csv
+from models import TwoLayerNet
+
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.utils.data
 import collections
 import myo
-import numpy as np
 import threading
-import time
 
-queue_size = 512
-DATANUM = 1000
-SAVE_DATA_PATH = 'dataset/dataset1.csv'
+
+model_path = 'models/model_fist_fingers_spread.pt'
+
 
 LABELLEN = 5
-SENSORNUM = 8
-all_data = np.empty((0, LABELLEN + int(SENSORNUM*queue_size/2)))
-count = 0
-flg_get_data = True
+THRESHOLD = 0.5
+
+# N is batch size; D_in is input dimension;
+# H is hidden dimension; D_out is output dimension.
+N, D_in, H, D_out = 64, 2048, 100, LABELLEN
+epochs = 20
+batch_size = 16
+queue_size = 512
 
 
 class Listener(myo.DeviceListener):
@@ -53,55 +58,49 @@ class Listener(myo.DeviceListener):
             return list(self.emg_data_queue)
 
 
-def main(label):
+def main(model):
     global queue_size
 
     # Initialize Myo and create a Hub and our listener.
-    myo.init(sdk_path='./myo_sdk/')
+    myo.init(sdk_path='../create_dataset/myo_sdk/')
     hub = myo.Hub()
     listener = Listener(queue_size)
 
     def get_data():
         global count
-        global flg_get_data
-        global all_data
 
         emgs = np.array([x[1] for x in listener.get_emg_data()]).T
         # print('emgs')
         # print(emgs)
         if emgs.shape == (8, queue_size):
-            if count > DATANUM-2:
-                flg_get_data = False
-
-            print(f'{count+1}/{DATANUM}')
-            count += 1
-
-            # print(type(emgs))
-            # print(emgs.shape)
-            # print(emgs[0])
             f = emgs
             F = np.fft.fft(f)
             Amp = np.abs(F)
             first_Amp = Amp[:, 0:int(queue_size/2)]
 
-            # print(Amp)
-            # print(first_Amp)
-
             # size: 8*queue_size/2
             flat_Amp = np.reshape(first_Amp, (1, int(8*queue_size/2)))[0]
 
-            # print(label, flat_Amp)
-
-            # size: len(label) + 8*queue_size/2
-            save_data = np.hstack((label, flat_Amp))
+            # save_data = np.hstack((label, flat_Amp))
 
             # size: (1,len(label) + 8*queue_size/2)
-            save_data = np.array([save_data])
-            # print(save_data)
+            # save_data = np.array([save_data])
+            input_data = torch.from_numpy(flat_Amp).float()
+            # model predict
+            pred = model(input_data)
+            # print(pred)
 
-            # print(all_data, save_data)
-            all_data = np.append(all_data, save_data, axis=0)
-            # print(all_data)
+            pred_numpy = pred.detach().numpy()
+
+            finger_data = np.empty((0, LABELLEN))
+            # print(finger_data)
+            for i, d in enumerate(pred_numpy):
+                if d > THRESHOLD:
+                    finger_data = np.append(finger_data, 1)
+                else:
+                    finger_data = np.append(finger_data, 0)
+
+            print(finger_data)
 
         else:
             print("buffering")
@@ -111,25 +110,19 @@ def main(label):
         threading.Thread(target=lambda: hub.run_forever(
             listener.on_event)).start()
 
-        while flg_get_data:
+        while True:
             get_data()
 
         print('saving data...')
         print(all_data.shape)
-        write_csv(all_data, SAVE_DATA_PATH)
+        write_csv(all_data, 'database1.csv')
         print('finish')
     finally:
         hub.stop()
 
 
-if __name__ == '__main__':
-    print("input finger situation")
-    finger_situation = input()
-    # 0→extended
-    # 1→not extended
-    finger_situation_ary = list(finger_situation)
-    if len(finger_situation_ary) == 5:
-        print(finger_situation_ary)
-    else:
-        print('the length is not 5!!')
-    main(finger_situation_ary)
+if __name__ == "__main__":
+    print('start!')
+    model = TwoLayerNet(D_in, H, D_out)
+    model.load_state_dict(torch.load(model_path))
+    main(model)
