@@ -9,7 +9,7 @@ import time
 
 queue_size = 512
 DATANUM = 1000
-SAVE_DATA_PATH = 'dataset/dataset1.csv'
+
 
 LABELLEN = 5
 SENSORNUM = 8
@@ -125,6 +125,8 @@ def main(label):
 if __name__ == '__main__':
     print("input finger situation")
     finger_situation = input()
+    SAVE_DATA_PATH = 'dataset/dataset_' + finger_situation + '.csv'
+    print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended
     finger_situation_ary = list(finger_situation)
