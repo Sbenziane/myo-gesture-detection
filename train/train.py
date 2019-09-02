@@ -65,14 +65,15 @@ def train(data, model, criterion, optimizer):
             [input, label] = d
             # y_pred = model(input.float())
             y_pred = model(input.to(device).float())
-            loss = criterion(y_pred.float(), label.float())
+            loss = criterion(y_pred.to(device).float(), label.float())
             # print(loss.item())
             if i % 100 == 0:
                 it = iter(dataloader_test)
                 [y_test, y_label] = next(it)
                 # print(y_test, y_label)
-                y_test_pred = model(y_test.float())
-                loss_test = criterion(y_test_pred, y_label.float())
+                y_test_pred = model(y_test.to(device).float())
+                loss_test = criterion(y_test_pred.to(
+                    device).float(), y_label.float())
                 print(
                     f'{epoch}, {i:04}, {loss.item():02.2f}, {loss_test.item():02.2f}')
 
