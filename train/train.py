@@ -64,7 +64,7 @@ def train(data, model, criterion, optimizer):
         for i, d in enumerate(dataloader):
             [input, label] = d
             # y_pred = model(input.float())
-            y_pred = model(input.to(device))
+            y_pred = model(input.to(device).float())
             loss = criterion(y_pred.float(), label.float())
             # print(loss.item())
             if i % 100 == 0:
