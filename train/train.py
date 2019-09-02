@@ -71,7 +71,7 @@ def train(data, model, criterion, optimizer):
 
 if __name__ == "__main__":
     print('loading...')
-    data = read_csv('../create_database/database1.csv')
+    data = read_csv('../create_dataset/dataset1.csv')
     print('finish')
     data = np.array(data)
 

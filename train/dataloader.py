@@ -23,6 +23,7 @@ class Dataset(torch.utils.data.Dataset):
 
         if self.transform:
             out_data = self.transform(out_data)
+            out_data = normalize(out_data)
             out_label = self.transform(out_label)
         return out_data, out_label
 
@@ -33,3 +34,14 @@ class Transform(object):
 
     def __call__(self, data):
         return data.astype(np.float)
+
+
+def normalize(data):
+    m = np.mean(data)
+    s = np.std(data)
+    return (data-m)/s
+
+
+# if __name__ == "__main__":
+#     data = torch.tensor([1, 2, 3], dtype=torch.float)
+#     print(normalize(data))
