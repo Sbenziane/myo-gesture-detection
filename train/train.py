@@ -8,6 +8,7 @@ import torch.utils.data
 
 
 LABELLEN = 5
+DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
@@ -85,8 +86,7 @@ def train(data, model, criterion, optimizer):
 
 if __name__ == "__main__":
     print('loading...')
-    data = read_csv('../create_dataset/dataset1.csv')
+    data = read_csv(DATASET_FILEPATH)
     print('finish')
-    data = np.array(data)
 
     train(data, model, criterion, optimizer)

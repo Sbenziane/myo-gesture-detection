@@ -1,4 +1,6 @@
 from models import TwoLayerNet
+from util import normalize
+
 
 import numpy as np
 import torch
@@ -85,7 +87,11 @@ def main(model):
 
             # size: (1,len(label) + 8*queue_size/2)
             # save_data = np.array([save_data])
-            input_data = torch.from_numpy(flat_Amp).float()
+
+            # normalize
+            input_data = normalize(flat_Amp)
+
+            input_data = torch.from_numpy(input_data).float()
             # model predict
             pred = model(input_data)
             # print(pred)

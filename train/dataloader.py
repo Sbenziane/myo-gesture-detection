@@ -1,3 +1,4 @@
+from util import normalize
 import numpy as np
 import torch
 import torch.utils.data
@@ -34,12 +35,6 @@ class Transform(object):
 
     def __call__(self, data):
         return data.astype(np.float)
-
-
-def normalize(data):
-    m = np.mean(data)
-    s = np.std(data)
-    return (data-m)/s
 
 
 # if __name__ == "__main__":
