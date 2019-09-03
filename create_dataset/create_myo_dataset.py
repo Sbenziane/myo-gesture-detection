@@ -125,7 +125,7 @@ def main(label):
 if __name__ == '__main__':
     print("input finger situation")
     finger_situation = input()
-    SAVE_DATA_PATH = 'dataset/dataset_' + finger_situation + '.csv'
+    SAVE_DATA_PATH = 'dataset/dataset_0903_' + finger_situation + '.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended

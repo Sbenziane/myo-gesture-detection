@@ -9,9 +9,10 @@ import torch.utils.data
 import collections
 import myo
 import threading
+import tkinter
 
 
-model_path = 'models/model_fist_fingers_spread.pt'
+model_path = 'models/model_8_gestures_0903.pt'
 
 
 LABELLEN = 5
@@ -69,6 +70,7 @@ def main(model):
     listener = Listener(queue_size)
 
     def get_data():
+        model.eval()
         global count
 
         emgs = np.array([x[1] for x in listener.get_emg_data()]).T
@@ -98,18 +100,27 @@ def main(model):
 
             pred_numpy = pred.detach().numpy()
 
+            # print(pred_numpy)
+            print('{0[0]:02.2f} {0[1]:02.2f} {0[2]:02.2f} {0[3]:02.2f} {0[4]:02.2f}    '.format(
+                pred_numpy), end='')
+
             finger_data = np.empty((0, LABELLEN))
             # print(finger_data)
+
             for i, d in enumerate(pred_numpy):
                 if d > THRESHOLD:
                     finger_data = np.append(finger_data, 1)
                 else:
                     finger_data = np.append(finger_data, 0)
 
+                canvas.coords('finger' + str(i), i*100,
+                              (1-d)*300, i*100 + 100, 300)
+
             print(finger_data)
 
         else:
-            print("buffering")
+            pass
+            # print("buffering")
             # print(emgs)
 
     try:
@@ -127,8 +138,37 @@ def main(model):
         hub.stop()
 
 
+def chg_view():
+
+    pass
+
+
 if __name__ == "__main__":
     print('start!')
-    model = TwoLayerNet(D_in, H, D_out)
-    model.load_state_dict(torch.load(model_path))
-    main(model)
+    model = TwoLayerNet(D_in, D_out)
+    device = torch.device('cpu')
+    print('load model')
+    model.load_state_dict(torch.load(model_path,  map_location=device))
+
+    # main(model)
+    print('thread start')
+    thread_model = threading.Thread(target=main, args=([model]))
+    thread_model.start()
+
+    print('表示できた？')
+    root = tkinter.Tk()
+    root.configure(bg='skyblue')
+
+    canvas = tkinter.Canvas(root, height=600, width=1000)
+    canvas.place(x=0, y=0)
+
+    canvas.create_rectangle(0, 0, 100, 300, fill='green', tags='finger0')
+    canvas.create_rectangle(200, 0, 300, 300, fill='green', tags='finger1')
+    canvas.create_rectangle(400, 0, 500, 300, fill='green', tags='finger2')
+    canvas.create_rectangle(600, 0, 700, 300, fill='green', tags='finger3')
+    canvas.create_rectangle(800, 0, 900, 300, fill='green', tags='finger4')
+    canvas.coords('finger0', 0, 30, 100, 300)
+    canvas.pack()
+
+    # root.after(10, chg_view)
+    root.mainloop()

@@ -17,10 +17,10 @@ DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
-epochs = 1000
+epochs = 30
 batch_size = 128
-model_path = 'models/model_8_gestures.pt'
-LOG_PATH = "logs/" + '0902_lr0.1-2'
+model_path = 'models/model_8_gestures_0903.pt'
+LOG_PATH = "logs/" + '0903_lr0.1-1'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)
@@ -32,6 +32,7 @@ model = model.to(device)
 
 
 def train(data, model, criterion, optimizer):
+    model.train()
     global lr
     train_size = int(0.8 * len(data))
     test_size = len(data) - train_size
