@@ -17,10 +17,10 @@ DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
-epochs = 30
-batch_size = 128
-model_path = 'models/model_8_gestures_0903.pt'
-LOG_PATH = "logs/" + '0903_lr0.1-1'
+epochs = 100
+batch_size = 512
+model_path = 'models/model_8_gestures_0903_3.pt'
+LOG_PATH = "logs/" + '0903_lr0.1-3'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)

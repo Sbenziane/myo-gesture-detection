@@ -8,7 +8,7 @@ import threading
 import time
 
 queue_size = 512
-DATANUM = 1000
+DATANUM = 3000
 
 
 LABELLEN = 5
@@ -117,7 +117,7 @@ def main(label):
         print('saving data...')
         print(all_data.shape)
         write_csv(all_data, SAVE_DATA_PATH)
-        print('finish')
+        print('finish', SAVE_DATA_PATH)
     finally:
         hub.stop()
 
@@ -125,7 +125,7 @@ def main(label):
 if __name__ == '__main__':
     print("input finger situation")
     finger_situation = input()
-    SAVE_DATA_PATH = 'dataset/dataset_0903_' + finger_situation + '.csv'
+    SAVE_DATA_PATH = 'dataset/dataset_0903_3_' + finger_situation + '.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended
