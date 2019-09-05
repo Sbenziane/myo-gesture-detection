@@ -1,4 +1,4 @@
-from util import read_csv
+from util import read_csv, calc_acc
 from dataloader import Dataset, Transform
 from models import TwoLayerNet
 import numpy as np
@@ -9,15 +9,15 @@ import math
 from tensorboardX import SummaryWriter
 
 LABELLEN = 5
-DATASET_FILEPATH = '../create_dataset/dataset/*.csv'
+DATASET_FILEPATH = '../create_dataset/dataset/seq/*.csv'
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
-epochs = 100
-batch_size = 512
-model_path = 'models/model_8_gestures_0903_3.pt'
-LOG_PATH = "logs/" + '0903_lr0.1-3'
+epochs = 30
+batch_size = 128
+model_path = 'models/model_7_gestures_seq_0905_4.pt'
+LOG_PATH = "logs/" + 'seq0905_lr0.1-4'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)
@@ -46,10 +46,16 @@ def train(data, model, criterion, optimizer):
         for i, d in enumerate(dataloader):
             [input, label] = d
             # y_pred = model(input.float())
+
+            # print('input.size()', input.size())
+            # print('label.size()', label.size())
             y_pred = model(input.to(device).float())
+
+            # print(y_pred.cpu().detach().numpy()[0],
+            #       label.cpu().detach().numpy()[0])
             loss = criterion(y_pred.to(device), label.float().to(device))
 
-            if i % 100 == 0:
+            if i == 0:
                 it = iter(dataloader_test)
                 [y_test, y_label] = next(it)
                 # print(y_test, y_label)
@@ -57,8 +63,10 @@ def train(data, model, criterion, optimizer):
                 loss_test = criterion(y_test_pred.to(
                     device).float(), y_label.float().to(device))
                 dif = math.sqrt(loss_test.item())
+                acc = calc_acc(y_test_pred.cpu().detach().numpy(),
+                               y_label.cpu().detach().numpy(), threshold=0.5)
                 print(
-                    f'{epoch:04}/{epochs:04}, {i:04}, {loss.item():02.4f}, {loss_test.item():02.4f}, dif:{dif:02.4f}')
+                    f'{epoch:04}/{epochs:04}, {i:04}, {loss.item():02.4f}, {loss_test.item():02.4f}, dif:{dif:02.4f}, acc:{acc:02.4f}')
 
             optimizer.zero_grad()
             loss.backward()
@@ -67,6 +75,7 @@ def train(data, model, criterion, optimizer):
         writer.add_scalar("LOSS/loss", loss.item(), epoch)
         writer.add_scalar("LOSS/loss_test", loss_test.item(), epoch)
         writer.add_scalar("dif", dif, epoch)
+        writer.add_scalar("acc", acc, epoch)
         writer.add_scalar("lr", lr, epoch)
 
         # if loss.item() < 0.0005:
