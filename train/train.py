@@ -1,6 +1,3 @@
-# model trainを入れる？
-
-
 from util import read_csv
 from dataloader import Dataset, Transform
 from models import TwoLayerNet

@@ -2,3 +2,4 @@ create_dataset/dataset/*
 train/__pycache__/*
 create_dataset/__pycache__/*
 train/models/*.pt
+.vscode/settings.json
