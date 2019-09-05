@@ -9,4 +9,11 @@ def write_csv(data, filepath):
 
     with open(filepath, 'a') as f:
         writer = csv.writer(f, lineterminator='\n')  # 改行コード（\n）を指定しておく
-        writer.writerows(list(data))
+        writer.writerows(data)
+
+
+def data_append(origin_data, new_data):
+    # for i in new_data:
+    #     origin_data.append(i)
+    origin_data.append(new_data)
+    return origin_data

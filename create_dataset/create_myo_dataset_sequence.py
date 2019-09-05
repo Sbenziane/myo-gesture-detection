@@ -132,7 +132,7 @@ if __name__ == '__main__':
     print("input finger situation")
     # finger_situation = input()
     # SAVE_DATA_PATH = 'dataset/dataset_0904_2_' + finger_situation + '.csv'
-    SAVE_DATA_PATH = 'dataset/seq/dataset_0904_1_sqe.csv'
+    SAVE_DATA_PATH = 'dataset/seq/dataset_0905_2_sqe.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended

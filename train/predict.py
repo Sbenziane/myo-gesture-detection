@@ -12,7 +12,7 @@ import threading
 import tkinter
 
 
-model_path = 'models/model_8_gestures_0903_2.pt'
+model_path = 'models/model_7_gestures_seq_0904_1.pt'
 
 
 LABELLEN = 5
@@ -113,6 +113,7 @@ def main(model):
                 else:
                     finger_data = np.append(finger_data, 0)
 
+                # chg color bar
                 canvas.coords('finger' + str(i), i*100,
                               (1-d)*300, i*100 + 100, 300)
 
@@ -136,11 +137,6 @@ def main(model):
         print('finish')
     finally:
         hub.stop()
-
-
-def chg_view():
-
-    pass
 
 
 if __name__ == "__main__":
@@ -167,8 +163,6 @@ if __name__ == "__main__":
     canvas.create_rectangle(400, 0, 500, 300, fill='green', tags='finger2')
     canvas.create_rectangle(600, 0, 700, 300, fill='green', tags='finger3')
     canvas.create_rectangle(800, 0, 900, 300, fill='green', tags='finger4')
-    canvas.coords('finger0', 0, 30, 100, 300)
     canvas.pack()
 
-    # root.after(10, chg_view)
     root.mainloop()
