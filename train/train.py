@@ -9,15 +9,15 @@ import math
 from tensorboardX import SummaryWriter
 
 LABELLEN = 5
-DATASET_FILEPATH = '../create_dataset/dataset/seq/*.csv'
+DATASET_FILEPATH = '../create_dataset/dataset/many/*.csv'
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
 epochs = 30
 batch_size = 128
-model_path = 'models/model_7_gestures_seq_0905_4.pt'
-LOG_PATH = "logs/" + 'seq0905_lr0.1-4'
+model_path = 'models/model_7_gestures_seq_0906_1.pt'
+LOG_PATH = "logs/" + 'seq0906_lr0.1-1'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)
@@ -67,16 +67,15 @@ def train(data, model, criterion, optimizer):
                                y_label.cpu().detach().numpy(), threshold=0.5)
                 print(
                     f'{epoch:04}/{epochs:04}, {i:04}, {loss.item():02.4f}, {loss_test.item():02.4f}, dif:{dif:02.4f}, acc:{acc:02.4f}')
+                writer.add_scalar("LOSS/loss", loss.item(), epoch)
+                writer.add_scalar("LOSS/loss_test", loss_test.item(), epoch)
+                writer.add_scalar("dif", dif, epoch)
+                writer.add_scalar("acc", acc, epoch)
+                writer.add_scalar("lr", lr, epoch)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-        writer.add_scalar("LOSS/loss", loss.item(), epoch)
-        writer.add_scalar("LOSS/loss_test", loss_test.item(), epoch)
-        writer.add_scalar("dif", dif, epoch)
-        writer.add_scalar("acc", acc, epoch)
-        writer.add_scalar("lr", lr, epoch)
 
         # if loss.item() < 0.0005:
         #     lr = 1e-2

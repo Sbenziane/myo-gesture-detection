@@ -12,7 +12,7 @@ import threading
 import tkinter
 
 
-model_path = 'models/model_7_gestures_seq_0905_3.pt'
+model_path = 'models/model_7_gestures_seq_0906_1.pt'
 
 
 LABELLEN = 5
