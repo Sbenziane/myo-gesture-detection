@@ -1,5 +1,6 @@
 import csv
 import pathlib
+import numpy as np
 
 
 def write_csv(data, filepath):
@@ -17,3 +18,12 @@ def data_append(origin_data, new_data):
     #     origin_data.append(i)
     origin_data.append(new_data)
     return origin_data
+
+
+def normalize(data):
+    m = np.mean(data)
+    s = np.std(data)
+    return (data - m) / s
+
+def sigmoid(x):
+  return  1/(1+np.exp(-x))

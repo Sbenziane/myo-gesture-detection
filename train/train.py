@@ -1,4 +1,4 @@
-from util import read_csv, calc_acc
+from util import read_csv, calc_acc, get_filedata
 from dataloader import Dataset, Transform
 from models import TwoLayerNet
 import numpy as np
@@ -9,15 +9,15 @@ import math
 from tensorboardX import SummaryWriter
 
 LABELLEN = 5
-DATASET_FILEPATH = '../create_dataset/dataset/many/*.csv'
+DATASET_FILEPATH = '../create_dataset/dataset/var/*.csv'
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
-N, D_in, H, D_out = 64, 2048, 1024, LABELLEN
+N, D_in, H, D_out = 64, 2048+8, 1024, LABELLEN
 epochs = 30
 batch_size = 128
-model_path = 'models/model_7_gestures_seq_0906_1.pt'
-LOG_PATH = "logs/" + 'seq0906_lr0.1-1'
+model_path = 'models/model_7_gestures_var_0910_4.pt'
+LOG_PATH = "logs/" + 'var0910_lr0.1-4'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)
@@ -28,13 +28,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 
-def train(data, model, criterion, optimizer):
+def train(filedata, filelen, model, criterion, optimizer):
     model.train()
     global lr
-    train_size = int(0.8 * len(data))
-    test_size = len(data) - train_size
+    train_size = int(0.8 * filelen)
+    test_size = filelen - train_size
 
-    data_set = Dataset(data, LABELLEN, transform=Transform())
+    data_set = Dataset(filedata, filelen, LABELLEN, transform=Transform())
     train_Dataset, test_Dataset = torch.utils.data.random_split(
         data_set, [train_size, test_size])
 
@@ -96,7 +96,8 @@ def train(data, model, criterion, optimizer):
 
 if __name__ == "__main__":
     print('loading...')
-    data = read_csv(DATASET_FILEPATH)
+    # data = read_csv(DATASET_FILEPATH)
+    filedata, filelen = get_filedata(DATASET_FILEPATH)
     print('finish')
     print(model_path)
-    train(data, model, criterion, optimizer)
+    train(filedata, filelen, model, criterion, optimizer)

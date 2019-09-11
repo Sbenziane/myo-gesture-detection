@@ -1,6 +1,6 @@
 from __future__ import print_function
 from matplotlib import pyplot as plt
-from util import write_csv, data_append
+from util import write_csv, data_append, normalize, sigmoid
 import collections
 import myo
 import numpy as np
@@ -8,7 +8,7 @@ import threading
 import time
 
 queue_size = 512
-DATANUM_TOTAL = 7000*2
+DATANUM_TOTAL = 7000
 DATANUM_EACH = 100
 
 LABELLEN = 5
@@ -94,15 +94,28 @@ def main():
             # print(emgs.shape)
             # print(emgs[0])
             f = emgs
+            m = np.mean(f, axis=1)
+            v = np.var(f, axis=1)
+            # m_norm = normalize(m)
+            # print(m_norm)
+            # print(m)
+            # print(normalize(v))
+            # print(v)
+            # print(sigmoid(v - np.mean(v)))
+            # v_chg = sigmoid(v - np.mean(v))
+            m = np.mean(np.abs(f), axis=1)
+            # print(np.mean(np.abs(f), axis=1))
             F = np.fft.fft(f)
             Amp = np.abs(F)
             first_Amp = Amp[:, 0:int(queue_size/2)]
 
             # size: 8*queue_size/2
             flat_Amp = np.reshape(first_Amp, (1, int(8*queue_size/2)))[0]
-
+            flat_Amp_norm = normalize(flat_Amp)
+            # print(flat_Amp_norm)
             # size: len(label) + 8*queue_size/2
-            save_data = np.hstack((label, flat_Amp))
+            # save_data = np.hstack((label, flat_Amp))
+            save_data = np.hstack((label, m, flat_Amp_norm))
 
             save_data = list(save_data)
             # print('save_data', save_data)
@@ -133,7 +146,7 @@ if __name__ == '__main__':
     print("input finger situation")
     # finger_situation = input()
     # SAVE_DATA_PATH = 'dataset/dataset_0904_2_' + finger_situation + '.csv'
-    SAVE_DATA_PATH = 'dataset/many/dataset_0906_1_sqe.csv'
+    SAVE_DATA_PATH = 'dataset/var/dataset_0910_1_seq.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended

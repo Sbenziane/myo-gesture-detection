@@ -12,7 +12,7 @@ import threading
 import tkinter
 
 
-model_path = 'models/model_7_gestures_seq_0906_1.pt'
+model_path = 'models/model_7_gestures_var_0910_4.pt'
 
 
 LABELLEN = 5
@@ -20,7 +20,7 @@ THRESHOLD = 0.5
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
-N, D_in, H, D_out = 64, 2048, 100, LABELLEN
+N, D_in, H, D_out = 64, 2048+8, 100, LABELLEN
 epochs = 20
 batch_size = 16
 queue_size = 512
@@ -92,8 +92,10 @@ def main(model):
 
             # normalize
             input_data = normalize(flat_Amp)
+            m = np.mean(np.abs(f), axis=1)
+            all_data = np.hstack((m, input_data))
 
-            input_data = torch.from_numpy(input_data).float()
+            input_data = torch.from_numpy(all_data).float()
             # model predict
             pred = model(input_data)
             # print(pred)
