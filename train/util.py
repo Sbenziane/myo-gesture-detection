@@ -63,13 +63,30 @@ def check_same(p, l):
 def calc_acc(preds, labels, threshold):
     count_same = 0
     count_all = 0
+
+    each_data = {}
     for i, p in enumerate(preds):
-        count_all += len(p)
+        data_len = len(p)
+        count_all += data_len
         l = labels[i]
         p_thr = list(map(lambda n: 1 if n > threshold else 0, p))
-        count_same += check_same(p_thr, l)
+        same_num = check_same(p_thr, l)
+        count_same += same_num
+        int_label = map(int, l)
+        str_label = ''.join(map(str, int_label))
+        if not str_label in each_data:
+            each_data[str_label] = [data_len, same_num]
+        else:
+            each_data[str_label][0] += data_len
+            each_data[str_label][1] += same_num
 
-    return count_same/count_all
+    acc_all = count_same/count_all
+
+    each_acc = {}
+    for label in each_data:
+        each_acc[label] = each_data[label][1] / each_data[label][0]
+
+    return acc_all, each_acc
 
 
 def select_file(idx, filedata):

@@ -8,8 +8,9 @@ import threading
 import time
 
 queue_size = 512
-DATANUM_TOTAL = 7000
-DATANUM_EACH = 100
+
+DATANUM_EACH = 300
+DATANUM_TOTAL = DATANUM_EACH*7*10
 
 LABELLEN = 5
 SENSORNUM = 8
@@ -52,6 +53,7 @@ class Listener(myo.DeviceListener):
         with self.lock:
             emg = event.emg
             e_time = event.timestamp
+            # print('emg')
             # print((e_time, emg))
             self.emg_data_queue.append((event.timestamp, emg))
             # print('start list')
@@ -87,7 +89,7 @@ def main():
             label = LABELS[label_index]
             label = np.array(label).astype('int32')
             print(
-                f'{count+1}/{DATANUM_TOTAL} label_index: {label_index} {LABELS[label_index]}')
+                f' label_index: {label_index} {LABELS[label_index]}  {count+1}/{DATANUM_TOTAL}')
             count += 1
 
             # print(type(emgs))
@@ -132,9 +134,11 @@ def main():
 
         while flg_get_data:
             get_data()
-            time.sleep(0.1)
+            time.sleep(0.01)
 
+        # save file
         print('saving data...')
+        print('Do not remove Myo')
         print(np.array(all_data).shape)
         write_csv(all_data, SAVE_DATA_PATH)
         print('finish', SAVE_DATA_PATH)
@@ -146,7 +150,7 @@ if __name__ == '__main__':
     print("input finger situation")
     # finger_situation = input()
     # SAVE_DATA_PATH = 'dataset/dataset_0904_2_' + finger_situation + '.csv'
-    SAVE_DATA_PATH = 'dataset/var/dataset_0910_1_seq.csv'
+    SAVE_DATA_PATH = 'dataset/var/dataset_0912_02_seq_test.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended
