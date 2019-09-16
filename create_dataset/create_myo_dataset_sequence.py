@@ -9,7 +9,7 @@ import time
 
 queue_size = 512
 
-DATANUM_EACH = 300
+DATANUM_EACH = 10
 DATANUM_TOTAL = DATANUM_EACH*7*10
 
 LABELLEN = 5
@@ -134,7 +134,7 @@ def main():
 
         while flg_get_data:
             get_data()
-            time.sleep(0.01)
+            time.sleep(1)
 
         # save file
         print('saving data...')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     print("input finger situation")
     # finger_situation = input()
     # SAVE_DATA_PATH = 'dataset/dataset_0904_2_' + finger_situation + '.csv'
-    SAVE_DATA_PATH = 'dataset/var/dataset_0912_02_seq_test.csv'
+    SAVE_DATA_PATH = 'dataset/dif/dataset_0916_03_seq_dif.csv'
     print(SAVE_DATA_PATH)
     # 0→extended
     # 1→not extended

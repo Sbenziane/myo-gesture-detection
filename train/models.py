@@ -10,19 +10,35 @@ class TwoLayerNet(torch.nn.Module):
         """
         super(TwoLayerNet, self).__init__()
         self.linear1 = torch.nn.Linear(D_in, 1024)
-        self.linear2 = torch.nn.Linear(1024, 128)
-        self.linear3 = torch.nn.Linear(128, D_out)
-        self.sigmoid = nn.Sigmoid()
+        self.linear2 = torch.nn.Linear(1024, 1024)
+        self.linear3 = torch.nn.Linear(1024, 512)
+        self.linear4 = torch.nn.Linear(512, 128)
+        self.linear5 = torch.nn.Linear(128, D_out)
+
         self.relu1 = nn.ReLU()
         self.relu2 = nn.ReLU()
+        self.relu3 = nn.ReLU()
+        self.relu4 = nn.ReLU()
+
+        self.drop_layer1 = nn.Dropout(p=0.2)
+        self.drop_layer2 = nn.Dropout(p=0.2)
+        self.drop_layer3 = nn.Dropout(p=0.2)
+        self.drop_layer4 = nn.Dropout(p=0.2)
+
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         out1 = self.linear1(x)  # .clamp(min=0)
-        out2 = self.relu1(out1)
+        out2 = self.relu1(self.drop_layer1(out1))
         out3 = self.linear2(out2)
-        out4 = self.relu2(out3)
+        out4 = self.relu2(self.drop_layer2(out3))
         out5 = self.linear3(out4)
-        out = self.sigmoid(out5)
+        out6 = self.relu3(self.drop_layer3(out5))
+        out7 = self.linear4(out6)
+        out8 = self.relu4(self.drop_layer4(out7))
+        out9 = self.linear5(out8)
+        out = self.sigmoid(out9)
+
         return out
 
 

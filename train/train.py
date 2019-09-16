@@ -9,17 +9,17 @@ import math
 from tensorboardX import SummaryWriter
 
 LABELLEN = 5
-DATASET_FILEPATH = '../create_dataset/dataset/var/*.csv'
-TEST_DATASET_FILEPATH = '../create_dataset/dataset/var/test/*test.csv'
+DATASET_FILEPATH = '../create_dataset/dataset/dif/0913/*.csv'
+TEST_DATASET_FILEPATH = '../create_dataset/dataset/dif/test/*.csv'
 
 
 # N is batch size; D_in is input dimension;
 # H is hidden dimension; D_out is output dimension.
 N, D_in, H, D_out = 64, 2048+8, 1024, LABELLEN
-epochs = 5
-batch_size = 128
-model_path = 'models/model_7_gestures_var_0912_4_dev.pt'
-LOG_PATH = "logs/" + 'var0912_lr0.1-4_dev'
+epochs = 50
+batch_size = 16
+model_path = 'models/model_7_gestures_var_0913_14.pt'
+LOG_PATH = "logs2/" + 'var0913_lr0.1-14'
 writer = SummaryWriter(log_dir=LOG_PATH)
 
 model = TwoLayerNet(D_in, D_out)
@@ -56,7 +56,7 @@ def train(**pram):
         dataloader = torch.utils.data.DataLoader(
             train_Dataset, batch_size=batch_size, shuffle=True, num_workers=4)
         dataloader_test = torch.utils.data.DataLoader(
-            test_Dataset, batch_size=batch_size, shuffle=True)
+            test_Dataset, batch_size=700, shuffle=True)
         for i, d in enumerate(dataloader):
             [input, label] = d
             # y_pred = model(input.float())
@@ -114,6 +114,8 @@ def train(**pram):
 
 
 if __name__ == "__main__":
+    print(model_path)
+    print(LOG_PATH)
     print('loading...')
     # data = read_csv(DATASET_FILEPATH)
 
@@ -123,7 +125,8 @@ if __name__ == "__main__":
     print('test dataset')
     filedata_test, filelen_test = get_filedata(TEST_DATASET_FILEPATH)
 
-    print('finish')
-    print(model_path)
+    print('load finish')
+    print('start train')
+
     train(filedata=filedata, filelen=filelen, filedata_test=filedata_test,
           filelen_test=filelen_test, model=model, criterion=criterion, optimizer=optimizer)

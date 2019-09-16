@@ -12,7 +12,7 @@ import threading
 import tkinter
 
 
-model_path = 'models/model_7_gestures_var_0912_1.pt'
+model_path = 'models/model_7_gestures_var_0913_9.pt'
 
 
 LABELLEN = 5
@@ -146,7 +146,19 @@ if __name__ == "__main__":
     model = TwoLayerNet(D_in, D_out)
     device = torch.device('cpu')
     print('load model')
-    model.load_state_dict(torch.load(model_path,  map_location=device))
+    # model.load_state_dict(torch.load(
+    #     model_path,  map_location=device)['state_dict'])
+
+    # original saved file with DataParallel
+    state_dict = torch.load(model_path,  map_location=device)
+    # create new OrderedDict that does not contain `module.`
+    from collections import OrderedDict
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = k[7:]  # remove `module.`
+        new_state_dict[name] = v
+    # load params
+    model.load_state_dict(new_state_dict)
 
     # main(model)
     print('thread start')
